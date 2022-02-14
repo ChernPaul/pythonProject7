@@ -10,12 +10,12 @@ from skimage.io import imshow, imsave, imread, show
 
 # save_current_parameters_to_file('D:\\Рабочий стол\\Project_settings.json')
 settings = {
-    'filepath': 'D:\\Рабочий стол\\forest.jpg',
+    'filepath': 'D:\\Рабочий стол\\sky.jpg',
     # MIN_VALUE = 0
-    'left_contrast_border_value': 0,
+    'left_contrast_border_value': 20,
     # MAX_VALUE = 100
-    'right_contrast_border_value': 10
-
+    'right_contrast_border_value': 60,
+    'path_to_save_result': "D:\\Рабочий стол\\Images"
 }
 
 
@@ -65,10 +65,18 @@ def save_current_parameters_to_file(filepath):
     json.dump(settings, open(filepath, 'w'))
 
 
+def save_image(img, directory):
+    imsave(directory, img)
+
+
+
+save_current_parameters_to_file('D:\\Рабочий стол\\Project_settings.json')
 json_settings_file = json.load(open('D:\\Рабочий стол\\Project_settings.json'))
 image_filepath = json_settings_file['filepath']
 contrast_left_border = json_settings_file['left_contrast_border_value']
 contrast_right_border = json_settings_file['right_contrast_border_value']
+path_to_save = json_settings_file['path_to_save_result']
+
 
 image = imread(image_filepath)
 left_border, right_border = np.percentile(image, (contrast_left_border, contrast_right_border))
@@ -79,8 +87,14 @@ image_equalized = exposure.equalize_hist(image)
 # Adaptive Equalization
 image_adapted_equalized = exposure.equalize_adapthist(image, clip_limit=0.03)
 
+save_image(image_rescale, path_to_save + '\\image_rescale.jpg')
+save_image(image_equalized, path_to_save + '\\image_equalized.jpg')
+save_image(image_adapted_equalized, path_to_save + '\\image_adapted_equalized.jpg')
+
 create_figure_of_union_plot(image, image_rescale, image_equalized, image_adapted_equalized)
 show()
+
+
 
 # print(image_filepath)
 # print(contrast_left_border)
